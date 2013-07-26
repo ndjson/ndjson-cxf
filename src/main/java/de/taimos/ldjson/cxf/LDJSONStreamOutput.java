@@ -16,6 +16,10 @@ import org.slf4j.LoggerFactory;
 
 public abstract class LDJSONStreamOutput implements StreamingOutput {
 	
+	private static final String LINE_DELIMITER = "\r\n";
+	
+	private static final String ENCODING = "UTF-8";
+	
 	private static final Logger logger = LoggerFactory.getLogger(LDJSONStreamOutput.class);
 	
 	private final AtomicBoolean running = new AtomicBoolean(true);
@@ -24,16 +28,33 @@ public abstract class LDJSONStreamOutput implements StreamingOutput {
 	
 	private final boolean heartbeat;
 	
+	private final int heartbeatMillis;
 	
+	
+	/**
+	 * same as LDJSONStreamOutput(false)
+	 */
 	public LDJSONStreamOutput() {
 		this(false);
 	}
 	
 	/**
+	 * same as LDJSONStreamOutput(5000)
+	 * 
 	 * @param heartbeat
 	 */
 	public LDJSONStreamOutput(boolean heartbeat) {
 		this.heartbeat = heartbeat;
+		this.heartbeatMillis = 5000;
+	}
+	
+	/**
+	 * @param heartbeatMillis
+	 */
+	public LDJSONStreamOutput(int heartbeatMillis) {
+		super();
+		this.heartbeat = true;
+		this.heartbeatMillis = heartbeatMillis;
 	}
 	
 	/**
@@ -63,8 +84,8 @@ public abstract class LDJSONStreamOutput implements StreamingOutput {
 				final String poll = this.messageQ.take();
 				if ((poll != null) && this.isRunning()) {
 					try {
-						output.write(poll.getBytes("UTF-8"));
-						output.write("\r\n".getBytes("UTF-8"));
+						output.write(poll.getBytes(LDJSONStreamOutput.ENCODING));
+						output.write(LDJSONStreamOutput.LINE_DELIMITER.getBytes(LDJSONStreamOutput.ENCODING));
 						output.flush();
 					} catch (final Exception e) {
 						this.running.set(false);
@@ -90,16 +111,16 @@ public abstract class LDJSONStreamOutput implements StreamingOutput {
 			
 			@Override
 			public void run() {
-				final long timeout = 5000;
+				String heartbeatMessage = LDJSONStreamOutput.this.getHeartbeatMessage();
 				
 				while (LDJSONStreamOutput.this.running.get()) {
 					try {
-						LDJSONStreamOutput.this.messageQ.add("{}");
+						LDJSONStreamOutput.this.messageQ.add(heartbeatMessage);
 					} catch (final Exception e) {
 						LDJSONStreamOutput.logger.error("Error on stream heartbeat", e);
 					}
 					try {
-						Thread.sleep(timeout);
+						Thread.sleep(LDJSONStreamOutput.this.heartbeatMillis);
 					} catch (final InterruptedException e) {
 						// ignore
 					}
@@ -141,6 +162,13 @@ public abstract class LDJSONStreamOutput implements StreamingOutput {
 	 */
 	protected ObjectMapper getMapper() {
 		return new ObjectMapper();
+	}
+	
+	/**
+	 * @return the heartbeat message
+	 */
+	protected String getHeartbeatMessage() {
+		return "{}";
 	}
 	
 }
