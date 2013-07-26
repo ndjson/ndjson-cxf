@@ -7,7 +7,7 @@
 	</parent>
 	<groupId>de.taimos.ldjson</groupId>
 	<artifactId>ldjson-cxf</artifactId>
-	<version>0.1.0</version>
+	<version>0.2.0-SNAPSHOT</version>
 	<name>LDJSON Support for Apache CXF</name>
 	<organization>
 		<name>Taimos GmbH</name>
@@ -40,7 +40,7 @@
 		<connection>scm:git:git@github.com:ldjson/ldjson-cxf.git</connection>
 		<developerConnection>scm:git:git@github.com:ldjson/ldjson-cxf.git</developerConnection>
 		<url>scm:git:git@github.com:ldjson/ldjson-cxf.git</url>
-	  <tag>release/0.1.0</tag>
+	  <tag>HEAD</tag>
   </scm>
 	<prerequisites>
 		<maven>3.0.0</maven>
