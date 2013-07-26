@@ -1,0 +1,102 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>org.sonatype.oss</groupId>
+		<artifactId>oss-parent</artifactId>
+		<version>7</version>
+	</parent>
+	<groupId>de.taimos.ldjson</groupId>
+	<artifactId>ldjson-cxf</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<name>LDJSON Support for Apache CXF</name>
+	<organization>
+		<name>Taimos GmbH</name>
+		<url>http://www.taimos.de</url>
+	</organization>
+	<developers>
+		<developer>
+			<id>thoeger</id>
+			<email>thorsten.hoeger@taimos.de</email>
+			<name>Thorsten Hoeger</name>
+			<organization>Taimos GmbH</organization>
+			<organizationUrl>http://www.taimos.de</organizationUrl>
+			<timezone>+1</timezone>
+		</developer>
+	</developers>
+	<licenses>
+		<license>
+			<name>The Apache Software License, Version 2.0</name>
+			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<cxf.version>2.7.5</cxf.version>
+		<jackson.version>2.2.1</jackson.version>
+		<slf4j.version>1.7.5</slf4j.version>
+	</properties>
+	<scm>
+		<connection>scm:git:git@github.com:ldjson/ldjson-cxf.git</connection>
+		<developerConnection>scm:git:git@github.com:ldjson/ldjson-cxf.git</developerConnection>
+		<url>scm:git:git@github.com:ldjson/ldjson-cxf.git</url>
+	</scm>
+	<prerequisites>
+		<maven>3.0.0</maven>
+	</prerequisites>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.0</version>
+				<configuration>
+					<source>1.7</source>
+					<target>1.7</target>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-release-plugin</artifactId>
+				<version>2.4.1</version>
+				<configuration>
+					<scmCommentPrefix>[maven-release-plugin]</scmCommentPrefix>
+					<tagNameFormat>release/@{project.version}</tagNameFormat>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.apache.cxf</groupId>
+			<artifactId>cxf-api</artifactId>
+			<version>${cxf.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.cxf</groupId>
+			<artifactId>cxf-rt-frontend-jaxrs</artifactId>
+			<version>${cxf.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-databind</artifactId>
+			<version>${jackson.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>${slf4j.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.11</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+</project>
