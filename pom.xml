@@ -62,7 +62,7 @@
 				<version>2.4.1</version>
 				<configuration>
 					<scmCommentPrefix>[maven-release-plugin]</scmCommentPrefix>
-					<tagNameFormat>release/@{project.version}</tagNameFormat>
+					<tagNameFormat>v@{project.version}</tagNameFormat>
 				</configuration>
 			</plugin>
 		</plugins>
