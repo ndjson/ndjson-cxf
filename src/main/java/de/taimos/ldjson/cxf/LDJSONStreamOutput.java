@@ -41,9 +41,9 @@ public abstract class LDJSONStreamOutput implements StreamingOutput {
 	}
 	
 	/**
-	 * if true same as LDJSONStreamOutput(5000) otherwise heartbeats are disabled
+	 * if true same as LDJSONStreamOutput(5000) otherwise heart beats are disabled
 	 * 
-	 * @param heartbeat
+	 * @param heartbeat - <code>true</code> to activate heart beats
 	 */
 	public LDJSONStreamOutput(boolean heartbeat) {
 		this.heartbeat = heartbeat;
@@ -51,23 +51,25 @@ public abstract class LDJSONStreamOutput implements StreamingOutput {
 	}
 	
 	/**
-	 * @param heartbeatMillis
+	 * @param heartbeatMillis - the millisecond interval for heart beat messages
 	 */
 	public LDJSONStreamOutput(int heartbeatMillis) {
-		super();
+		if (heartbeatMillis <= 0) {
+			throw new IllegalArgumentException();
+		}
 		this.heartbeat = true;
 		this.heartbeatMillis = heartbeatMillis;
 	}
 	
 	/**
-	 * @return the running
+	 * @return <code>true</code> if this stream is running; <code>false</code> otherwise
 	 */
 	public boolean isRunning() {
 		return this.running.get();
 	}
 	
 	/**
-	 * @param running the running to set
+	 * @param running <code>false</code> to stop streaming
 	 */
 	public void setRunning(final boolean running) {
 		this.running.set(running);
@@ -90,6 +92,7 @@ public abstract class LDJSONStreamOutput implements StreamingOutput {
 						output.write(LDJSONStreamOutput.LINE_DELIMITER.getBytes(LDJSONStreamOutput.ENCODING));
 						output.flush();
 					} catch (final Exception e) {
+						// If we cannot write to stream we stop streaming
 						this.running.set(false);
 					}
 				}
@@ -143,22 +146,30 @@ public abstract class LDJSONStreamOutput implements StreamingOutput {
 	}
 	
 	/**
-	 * Writes the given JSON object to the stream
+	 * Writes the given object as JSON to the stream
 	 * 
-	 * @param json the JSON object to write
+	 * @param obj the object to write
 	 */
 	public abstract void writeObject(Object obj);
 	
+	/**
+	 * Override to add tear down functionality
+	 */
 	protected void stopStream() {
 		//
 	}
 	
+	/**
+	 * Override to add set up functionality
+	 */
 	protected void startStream() {
 		//
 	}
 	
 	/**
-	 * @return the heartbeat message
+	 * Override to customize the heart beat message
+	 * 
+	 * @return the heart beat message
 	 */
 	protected String getHeartbeatMessage() {
 		return "{}";
