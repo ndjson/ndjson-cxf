@@ -3,20 +3,22 @@ package de.taimos.ldjson.cxf;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.StreamingOutput;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public abstract class LDJSONStreamOutput implements StreamingOutput {
 	
-	private static final String LINE_DELIMITER = "\r\n";
+	private static final int DEFAULT_POLL_SECONDS = 5;
+	
+	private static final int DEFAULT_HEARTBEAT_RATE = 5000;
+	
+	private static final String LINE_DELIMITER = "\n";
 	
 	private static final String ENCODING = "UTF-8";
 	
@@ -39,13 +41,13 @@ public abstract class LDJSONStreamOutput implements StreamingOutput {
 	}
 	
 	/**
-	 * same as LDJSONStreamOutput(5000)
+	 * if true same as LDJSONStreamOutput(5000) otherwise heartbeats are disabled
 	 * 
 	 * @param heartbeat
 	 */
 	public LDJSONStreamOutput(boolean heartbeat) {
 		this.heartbeat = heartbeat;
-		this.heartbeatMillis = 5000;
+		this.heartbeatMillis = LDJSONStreamOutput.DEFAULT_HEARTBEAT_RATE;
 	}
 	
 	/**
@@ -81,7 +83,7 @@ public abstract class LDJSONStreamOutput implements StreamingOutput {
 		
 		while (this.isRunning()) {
 			try {
-				final String poll = this.messageQ.take();
+				final String poll = this.messageQ.poll(LDJSONStreamOutput.DEFAULT_POLL_SECONDS, TimeUnit.SECONDS);
 				if ((poll != null) && this.isRunning()) {
 					try {
 						output.write(poll.getBytes(LDJSONStreamOutput.ENCODING));
@@ -145,9 +147,7 @@ public abstract class LDJSONStreamOutput implements StreamingOutput {
 	 * 
 	 * @param json the JSON object to write
 	 */
-	public void writeObject(Object obj) throws JsonProcessingException {
-		this.writeObject(this.getMapper().writeValueAsString(obj));
-	}
+	public abstract void writeObject(Object obj);
 	
 	protected void stopStream() {
 		//
@@ -155,13 +155,6 @@ public abstract class LDJSONStreamOutput implements StreamingOutput {
 	
 	protected void startStream() {
 		//
-	}
-	
-	/**
-	 * @return the mapper to use
-	 */
-	protected ObjectMapper getMapper() {
-		return new ObjectMapper();
 	}
 	
 	/**
