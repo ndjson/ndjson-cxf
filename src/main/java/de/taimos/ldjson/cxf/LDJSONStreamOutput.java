@@ -68,20 +68,20 @@ public abstract class LDJSONStreamOutput implements StreamingOutput {
 	/**
 	 * @return <code>true</code> if this stream is running; <code>false</code> otherwise
 	 */
-	public boolean isRunning() {
+	public final boolean isRunning() {
 		return this.running.get();
 	}
 	
 	/**
 	 * stop streaming
 	 */
-	public void stop() {
+	public final void stop() {
 		LDJSONStreamOutput.this.heartbeatExecutor.shutdown();
 		this.running.set(false);
 	}
 	
 	@Override
-	public void write(final OutputStream output) throws IOException, WebApplicationException {
+	public final void write(final OutputStream output) throws IOException, WebApplicationException {
 		this.startStream();
 		
 		if (this.heartbeat) {
