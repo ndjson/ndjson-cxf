@@ -2,7 +2,9 @@ package de.taimos.ldjson.cxf;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -31,6 +33,8 @@ public abstract class LDJSONStreamOutput implements StreamingOutput {
 	private final boolean heartbeat;
 	
 	private final int heartbeatMillis;
+	
+	private ScheduledExecutorService heartbeatExecutor;
 	
 	
 	/**
@@ -69,10 +73,11 @@ public abstract class LDJSONStreamOutput implements StreamingOutput {
 	}
 	
 	/**
-	 * @param running <code>false</code> to stop streaming
+	 * stop streaming
 	 */
-	public void setRunning(final boolean running) {
-		this.running.set(running);
+	public void stop() {
+		LDJSONStreamOutput.this.heartbeatExecutor.shutdown();
+		this.running.set(false);
 	}
 	
 	@Override
@@ -93,7 +98,7 @@ public abstract class LDJSONStreamOutput implements StreamingOutput {
 						output.flush();
 					} catch (final Exception e) {
 						// If we cannot write to stream we stop streaming
-						this.running.set(false);
+						this.stop();
 					}
 				}
 			} catch (final InterruptedException ie) {
@@ -112,28 +117,22 @@ public abstract class LDJSONStreamOutput implements StreamingOutput {
 	}
 	
 	private void startHeartbeat() {
-		final Thread heartbeatThread = new Thread() {
+		this.heartbeatExecutor = Executors.newScheduledThreadPool(1);
+		Runnable cmd = new Runnable() {
 			
 			@Override
 			public void run() {
-				String heartbeatMessage = LDJSONStreamOutput.this.getHeartbeatMessage();
-				
-				while (LDJSONStreamOutput.this.running.get()) {
+				if (LDJSONStreamOutput.this.isRunning()) {
 					try {
+						String heartbeatMessage = LDJSONStreamOutput.this.getHeartbeatMessage();
 						LDJSONStreamOutput.this.messageQ.add(heartbeatMessage);
 					} catch (final Exception e) {
 						LDJSONStreamOutput.logger.error("Error on stream heartbeat", e);
 					}
-					try {
-						Thread.sleep(LDJSONStreamOutput.this.heartbeatMillis);
-					} catch (final InterruptedException e) {
-						// ignore
-					}
 				}
 			}
 		};
-		heartbeatThread.setDaemon(true);
-		heartbeatThread.start();
+		this.heartbeatExecutor.scheduleAtFixedRate(cmd, this.heartbeatMillis, this.heartbeatMillis, TimeUnit.MILLISECONDS);
 	}
 	
 	/**
