@@ -34,7 +34,7 @@ public abstract class LDJSONStreamOutput implements StreamingOutput {
 	
 	private final int heartbeatMillis;
 	
-	private ScheduledExecutorService heartbeatExecutor;
+	private final ScheduledExecutorService heartbeatExecutor = Executors.newScheduledThreadPool(1);
 	
 	
 	/**
@@ -117,7 +117,6 @@ public abstract class LDJSONStreamOutput implements StreamingOutput {
 	}
 	
 	private void startHeartbeat() {
-		this.heartbeatExecutor = Executors.newScheduledThreadPool(1);
 		Runnable cmd = new Runnable() {
 			
 			@Override
@@ -140,7 +139,7 @@ public abstract class LDJSONStreamOutput implements StreamingOutput {
 	 * 
 	 * @param json the JSON string to write
 	 */
-	public void writeObject(String json) {
+	public final void writeObject(String json) {
 		this.messageQ.add(json);
 	}
 	
