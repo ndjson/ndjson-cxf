@@ -16,7 +16,12 @@ import org.slf4j.LoggerFactory;
 
 public abstract class LDJSONStreamOutput implements StreamingOutput {
 	
-	private static final int DEFAULT_POLL_SECONDS = 5;
+	/**
+	 * The MediaType for LD-JSON
+	 */
+	public static final String MEDIA_TYPE = "application/x-ldjson";
+	
+	private static final int DEFAULT_POLL_TIMEOUT = 5;
 	
 	private static final int DEFAULT_HEARTBEAT_RATE = 5000;
 	
@@ -90,7 +95,7 @@ public abstract class LDJSONStreamOutput implements StreamingOutput {
 		
 		while (this.isRunning()) {
 			try {
-				final String poll = this.messageQ.poll(LDJSONStreamOutput.DEFAULT_POLL_SECONDS, TimeUnit.SECONDS);
+				final String poll = this.messageQ.poll(LDJSONStreamOutput.DEFAULT_POLL_TIMEOUT, TimeUnit.SECONDS);
 				if ((poll != null) && this.isRunning()) {
 					try {
 						output.write(poll.getBytes(LDJSONStreamOutput.ENCODING));
