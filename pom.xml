@@ -7,7 +7,7 @@
 	</parent>
 	<groupId>de.taimos.ldjson</groupId>
 	<artifactId>ldjson-cxf</artifactId>
-	<version>0.2.0-SNAPSHOT</version>
+	<version>0.2-SNAPSHOT</version>
 	<name>LDJSON Support for Apache CXF</name>
 	<organization>
 		<name>Taimos GmbH</name>
@@ -32,7 +32,7 @@
 	</licenses>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<slf4j.version>1.7.5</slf4j.version>
+		<slf4j.version>1.7.7</slf4j.version>
 	</properties>
 	<scm>
 		<connection>scm:git:git@github.com:ldjson/ldjson-cxf.git</connection>
@@ -70,7 +70,7 @@
 		<dependency>
 			<groupId>javax.ws.rs</groupId>
 			<artifactId>javax.ws.rs-api</artifactId>
-			<version>2.0-m10</version>
+			<version>2.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.slf4j</groupId>
