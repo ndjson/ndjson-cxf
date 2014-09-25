@@ -14,12 +14,19 @@ import javax.ws.rs.core.StreamingOutput;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public abstract class LDJSONStreamOutput implements StreamingOutput {
+/**
+ * Copyright 2014 Taimos GmbH<br>
+ * <br>
+ *
+ * @author thoeger
+ *
+ */
+public abstract class NDJSONStreamOutput implements StreamingOutput {
 	
 	/**
-	 * The MediaType for LD-JSON
+	 * The MediaType for ND-JSON
 	 */
-	public static final String MEDIA_TYPE = "application/x-ldjson";
+	public static final String MEDIA_TYPE = "application/x-ndjson";
 	
 	private static final int DEFAULT_POLL_TIMEOUT = 5;
 	
@@ -29,7 +36,7 @@ public abstract class LDJSONStreamOutput implements StreamingOutput {
 	
 	private static final String ENCODING = "UTF-8";
 	
-	private static final Logger logger = LoggerFactory.getLogger(LDJSONStreamOutput.class);
+	private static final Logger logger = LoggerFactory.getLogger(NDJSONStreamOutput.class);
 	
 	private final AtomicBoolean running = new AtomicBoolean(true);
 	
@@ -43,26 +50,26 @@ public abstract class LDJSONStreamOutput implements StreamingOutput {
 	
 	
 	/**
-	 * same as LDJSONStreamOutput(false)
+	 * same as NLDJSONStreamOutput(false)
 	 */
-	public LDJSONStreamOutput() {
+	public NDJSONStreamOutput() {
 		this(false);
 	}
 	
 	/**
-	 * if true same as LDJSONStreamOutput(5000) otherwise heart beats are disabled
-	 * 
+	 * if true same as NLDJSONStreamOutput(5000) otherwise heart beats are disabled
+	 *
 	 * @param heartbeat - <code>true</code> to activate heart beats
 	 */
-	public LDJSONStreamOutput(boolean heartbeat) {
+	public NDJSONStreamOutput(boolean heartbeat) {
 		this.heartbeat = heartbeat;
-		this.heartbeatMillis = LDJSONStreamOutput.DEFAULT_HEARTBEAT_RATE;
+		this.heartbeatMillis = NDJSONStreamOutput.DEFAULT_HEARTBEAT_RATE;
 	}
 	
 	/**
 	 * @param heartbeatMillis - the millisecond interval for heart beat messages
 	 */
-	public LDJSONStreamOutput(int heartbeatMillis) {
+	public NDJSONStreamOutput(int heartbeatMillis) {
 		if (heartbeatMillis <= 0) {
 			throw new IllegalArgumentException();
 		}
@@ -81,7 +88,7 @@ public abstract class LDJSONStreamOutput implements StreamingOutput {
 	 * stop streaming
 	 */
 	public final void stop() {
-		LDJSONStreamOutput.this.heartbeatExecutor.shutdown();
+		NDJSONStreamOutput.this.heartbeatExecutor.shutdown();
 		this.running.set(false);
 	}
 	
@@ -95,11 +102,11 @@ public abstract class LDJSONStreamOutput implements StreamingOutput {
 		
 		while (this.isRunning()) {
 			try {
-				final String poll = this.messageQ.poll(LDJSONStreamOutput.DEFAULT_POLL_TIMEOUT, TimeUnit.SECONDS);
+				final String poll = this.messageQ.poll(NDJSONStreamOutput.DEFAULT_POLL_TIMEOUT, TimeUnit.SECONDS);
 				if ((poll != null) && this.isRunning()) {
 					try {
-						output.write(poll.getBytes(LDJSONStreamOutput.ENCODING));
-						output.write(LDJSONStreamOutput.LINE_DELIMITER.getBytes(LDJSONStreamOutput.ENCODING));
+						output.write(poll.getBytes(NDJSONStreamOutput.ENCODING));
+						output.write(NDJSONStreamOutput.LINE_DELIMITER.getBytes(NDJSONStreamOutput.ENCODING));
 						output.flush();
 					} catch (final Exception e) {
 						// If we cannot write to stream we stop streaming
@@ -108,9 +115,9 @@ public abstract class LDJSONStreamOutput implements StreamingOutput {
 				}
 			} catch (final InterruptedException ie) {
 				// Just retry
-				LDJSONStreamOutput.logger.info("stream endpoint was interrupted");
+				NDJSONStreamOutput.logger.info("stream endpoint was interrupted");
 			} catch (final Exception e) {
-				LDJSONStreamOutput.logger.error("Error on stream endpoint", e);
+				NDJSONStreamOutput.logger.error("Error on stream endpoint", e);
 			}
 		}
 		try {
@@ -126,12 +133,12 @@ public abstract class LDJSONStreamOutput implements StreamingOutput {
 			
 			@Override
 			public void run() {
-				if (LDJSONStreamOutput.this.isRunning()) {
+				if (NDJSONStreamOutput.this.isRunning()) {
 					try {
-						String heartbeatMessage = LDJSONStreamOutput.this.getHeartbeatMessage();
-						LDJSONStreamOutput.this.messageQ.add(heartbeatMessage);
+						String heartbeatMessage = NDJSONStreamOutput.this.getHeartbeatMessage();
+						NDJSONStreamOutput.this.messageQ.add(heartbeatMessage);
 					} catch (final Exception e) {
-						LDJSONStreamOutput.logger.error("Error on stream heartbeat", e);
+						NDJSONStreamOutput.logger.error("Error on stream heartbeat", e);
 					}
 				}
 			}
@@ -141,7 +148,7 @@ public abstract class LDJSONStreamOutput implements StreamingOutput {
 	
 	/**
 	 * Writes the given JSON string to the stream
-	 * 
+	 *
 	 * @param json the JSON string to write
 	 */
 	public final void writeObject(String json) {
@@ -150,7 +157,7 @@ public abstract class LDJSONStreamOutput implements StreamingOutput {
 	
 	/**
 	 * Writes the given object as JSON to the stream
-	 * 
+	 *
 	 * @param obj the object to write
 	 */
 	public abstract void writeObject(Object obj);
@@ -171,7 +178,7 @@ public abstract class LDJSONStreamOutput implements StreamingOutput {
 	
 	/**
 	 * Override to customize the heart beat message
-	 * 
+	 *
 	 * @return the heart beat message
 	 */
 	protected String getHeartbeatMessage() {

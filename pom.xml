@@ -5,10 +5,10 @@
 		<artifactId>oss-parent</artifactId>
 		<version>7</version>
 	</parent>
-	<groupId>de.taimos.ldjson</groupId>
-	<artifactId>ldjson-cxf</artifactId>
+	<groupId>de.taimos.ndjson</groupId>
+	<artifactId>ndjson-cxf</artifactId>
 	<version>0.2-SNAPSHOT</version>
-	<name>LDJSON Support for Apache CXF</name>
+	<name>NDJSON Support for Apache CXF</name>
 	<organization>
 		<name>Taimos GmbH</name>
 		<url>http://www.taimos.de</url>
@@ -35,9 +35,9 @@
 		<slf4j.version>1.7.7</slf4j.version>
 	</properties>
 	<scm>
-		<connection>scm:git:git@github.com:ldjson/ldjson-cxf.git</connection>
-		<developerConnection>scm:git:git@github.com:ldjson/ldjson-cxf.git</developerConnection>
-		<url>scm:git:git@github.com:ldjson/ldjson-cxf.git</url>
+		<connection>scm:git:git@github.com:ndjson/ndjson-cxf.git</connection>
+		<developerConnection>scm:git:git@github.com:ndjson/ndjson-cxf.git</developerConnection>
+		<url>scm:git:git@github.com:ndjson/ndjson-cxf.git</url>
 	  <tag>HEAD</tag>
   </scm>
 	<prerequisites>
